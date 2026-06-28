@@ -21,8 +21,14 @@ window.MASUL_SERVICES=[{"name":"Men's Cut"},{"name":"Men's Cut & Beard"},{"name"
     }
   }
   swap();
-  try { new MutationObserver(swap).observe(document.documentElement, { childList: true, subtree: true }); } catch (e) {}
-  var n = 0, iv = setInterval(function () { swap(); if (++n > 40) clearInterval(iv); }, 500); // ~20s safety net
+  // Mirror masul-widget's keepAlive window: these bundler sites rebuild the
+  // whole document at runtime, so re-run swap during the settle window, then stop.
+  try {
+    var mo = new MutationObserver(swap);
+    mo.observe(document.documentElement, { childList: true, subtree: true });
+    setTimeout(function () { mo.disconnect(); }, 30000);
+  } catch (e) {}
+  var n = 0, iv = setInterval(function () { swap(); if (++n > 60) clearInterval(iv); }, 500); // ~30s safety net
 })();
 </script>
 <!-- gallery-src-swap:end -->
